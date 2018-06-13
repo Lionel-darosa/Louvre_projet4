@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 class TicketingController extends Controller
 {
     /**
-     * @Route("/ticketing", name="ticketing")
+     * @Route("/", name="ticketing")
      */
     public function index()
     {
