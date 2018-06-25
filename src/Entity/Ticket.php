@@ -19,7 +19,7 @@ class Ticket
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name;
+    private $lastName;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -37,11 +37,6 @@ class Ticket
     private $price;
 
     /**
-     * @ORM\Column(type="datetime")
-     */
-    private $Date;
-
-    /**
      * @ORM\Column(type="boolean")
      */
     private $half;
@@ -50,7 +45,7 @@ class Ticket
      * @ORM\ManyToOne(targetEntity="App\Entity\Order", inversedBy="tickets")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $order_id;
+    private $order;
 
     public function getId()
     {
@@ -62,9 +57,9 @@ class Ticket
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setlastName(string $lastName): self
     {
-        $this->name = $name;
+        $this->lastName = $lastName;
 
         return $this;
     }
@@ -105,18 +100,6 @@ class Ticket
         return $this;
     }
 
-    public function getDate(): ?\DateTimeInterface
-    {
-        return $this->Date;
-    }
-
-    public function setDate(\DateTimeInterface $Date): self
-    {
-        $this->Date = $Date;
-
-        return $this;
-    }
-
     public function getHalf(): ?bool
     {
         return $this->half;
@@ -129,14 +112,14 @@ class Ticket
         return $this;
     }
 
-    public function getOrderId(): ?Order
+    public function getOrder(): ?Order
     {
-        return $this->order_id;
+        return $this->order;
     }
 
-    public function setOrderId(?Order $order_id): self
+    public function setOrder(?Order $order): self
     {
-        $this->order_id = $order_id;
+        $this->order = $order;
 
         return $this;
     }

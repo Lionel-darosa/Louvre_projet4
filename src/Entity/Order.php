@@ -24,7 +24,7 @@ class Order
     private $email;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Ticket", mappedBy="order_id", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\Ticket", mappedBy="order", orphanRemoval=true)
      */
     private $tickets;
 
@@ -32,6 +32,11 @@ class Order
      * @ORM\Column(type="datetime")
      */
     private $orderDate;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $choiceDate;
 
     public function __construct()
     {
@@ -67,7 +72,7 @@ class Order
     {
         if (!$this->tickets->contains($ticket)) {
             $this->tickets[] = $ticket;
-            $ticket->setOrderId($this);
+            $ticket->setOrder($this);
         }
 
         return $this;
@@ -78,8 +83,8 @@ class Order
         if ($this->tickets->contains($ticket)) {
             $this->tickets->removeElement($ticket);
             // set the owning side to null (unless already changed)
-            if ($ticket->getOrderId() === $this) {
-                $ticket->setOrderId(null);
+            if ($ticket->getOrder() === $this) {
+                $ticket->setOrder(null);
             }
         }
 
@@ -94,6 +99,18 @@ class Order
     public function setOrderDate(\DateTimeInterface $orderDate): self
     {
         $this->orderDate = $orderDate;
+
+        return $this;
+    }
+
+    public function getChoiceDate(): ?\DateTimeInterface
+    {
+        return $this->choiceDate;
+    }
+
+    public function setChoiceDate(\DateTimeInterface $choiceDate): self
+    {
+        $this->choiceDate = $choiceDate;
 
         return $this;
     }
