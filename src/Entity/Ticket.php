@@ -37,24 +37,29 @@ class Ticket
     private $price;
 
     /**
-     * @ORM\Column(type="boolean")
-     */
-    private $half;
-
-    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Order", inversedBy="tickets")
      * @ORM\JoinColumn(nullable=false)
      */
     private $order;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $country;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $reduced;
 
     public function getId()
     {
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getLastName(): ?string
     {
-        return $this->name;
+        return $this->lastName;
     }
 
     public function setlastName(string $lastName): self
@@ -100,18 +105,6 @@ class Ticket
         return $this;
     }
 
-    public function getHalf(): ?bool
-    {
-        return $this->half;
-    }
-
-    public function setHalf(bool $half): self
-    {
-        $this->half = $half;
-
-        return $this;
-    }
-
     public function getOrder(): ?Order
     {
         return $this->order;
@@ -120,6 +113,30 @@ class Ticket
     public function setOrder(?Order $order): self
     {
         $this->order = $order;
+
+        return $this;
+    }
+
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    public function setCountry(string $country): self
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    public function getReduced(): ?bool
+    {
+        return $this->reduced;
+    }
+
+    public function setReduced(bool $reduced): self
+    {
+        $this->reduced = $reduced;
 
         return $this;
     }

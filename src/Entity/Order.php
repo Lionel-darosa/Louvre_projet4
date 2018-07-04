@@ -38,6 +38,11 @@ class Order
      */
     private $choiceDate;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $half;
+
     public function __construct()
     {
         $this->tickets = new ArrayCollection();
@@ -111,6 +116,18 @@ class Order
     public function setChoiceDate(\DateTimeInterface $choiceDate): self
     {
         $this->choiceDate = $choiceDate;
+
+        return $this;
+    }
+
+    public function getHalf(): ?bool
+    {
+        return $this->half;
+    }
+
+    public function setHalf(bool $half): self
+    {
+        $this->half = $half;
 
         return $this;
     }
