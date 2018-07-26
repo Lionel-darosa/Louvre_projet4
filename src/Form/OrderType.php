@@ -4,11 +4,12 @@ namespace App\Form;
 
 
 use App\Entity\Order;
-use Doctrine\DBAL\Types\DateType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -18,8 +19,14 @@ class OrderType extends AbstractType
     {
         $builder
             ->add('email', EmailType::class)
-            ->add('orderDate', DateType::class)
-            ->add('half', CheckboxType::class, array('required' => false))
+            ->add('choiceDate', DateType::class,[
+                'format' => 'dd/MM/yyyy',
+                'widget' => 'single_text',
+                'label' => 'Date de visite'
+            ])
+            ->add('half', CheckboxType::class, [
+                'required' => false
+            ])
             ->add('Tickets', CollectionType::class, [
                 "entry_type"    => TicketType::class,
                 "allow_add"     => true,
@@ -31,7 +38,7 @@ class OrderType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefault([
+        $resolver->setDefaults([
             'data_class' => Order::class,
         ]);
     }

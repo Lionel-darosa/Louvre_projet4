@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator\Constraints as TicketAssert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\TicketRepository")
@@ -18,21 +20,37 @@ class Ticket
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(
+     *     message="veuillez entrer votre nom de famille"
+     * )
+     * @Assert\Type("string")
+     * @Assert\Length(max=255)
      */
     private $lastName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(
+     *     message="veuillez entrer votre prénom"
+     * )
+     * @Assert\Type("string")
+     * @Assert\Length(max=255)
      */
     private $firstName;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\NotBlank(
+     *     message="veuillez choisir une date"
+     * )
      */
     private $birth;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Assert\Type(
+     *     type="integer"
+     * )
      */
     private $price;
 
@@ -44,11 +62,18 @@ class Ticket
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(
+     *     message="veuillez choisir un pays"
+     * )
+     * @Assert\Country()
      */
     private $country;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Asser\Type(
+     *     type="bool"
+     * )
      */
     private $reduced;
 
