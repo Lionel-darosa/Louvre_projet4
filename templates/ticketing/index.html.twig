@@ -22,7 +22,7 @@
                         <div class="col-md-4">
                             {{ form_label(form.choiceDate) }}
                         </div>
-                        <div class="col-md-6" data-provide="datepicker">
+                        <div class="col-md-6">
                             {{ form_widget(form.choiceDate) }}
                         </div>
                     </div>
@@ -35,6 +35,14 @@
                         {{ form_errors(form.half) }}
                     </div>
                     <hr class="mb-4">
+                    <button type="button" class="btn btn-sm btn-primary btn-add" data-rel="#tickets">Ajouter un ticket</button>
+                    <div id="tickets" class="row" data-index="{{ form.tickets|length > 0 ? form.tickets|last.vars.name+1 : 0 }}" data-prototype="{{ include("ticketing/ticket.html.twig", { form: form.tickets.vars.prototype })|e("html_attr") }}">
+                        {% for ticket in form.tickets %}
+                            {{ include("ticketing/ticket.html.twig", { form: ticket }) }}
+                        {% endfor %}
+                    </div>
+                    <button type="submit" class="btn btn-secondary">Valider</button>
+                {{ form_widget(form._token) }}
                 {{ form_end (form, {"render_rest": false }) }}
             </div>
         </div>

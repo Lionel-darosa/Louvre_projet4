@@ -11,7 +11,9 @@ use Symfony\Component\Validator\Context\ExecutionContextFactoryInterface;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
+ * @ORM\Table(name="odr")
  * @ORM\Entity(repositoryClass="App\Repository\OrderRepository")
+ * @ORM\HasLifecycleCallbacks
  * @OrderAssert\MoreThanThousand
  */
 class Order
@@ -33,6 +35,7 @@ class Order
     private $email;
 
     /**
+     * @var Collection
      * @ORM\OneToMany(targetEntity="App\Entity\Ticket", mappedBy="order", orphanRemoval=true)
      */
     private $tickets;
@@ -60,21 +63,34 @@ class Order
      */
     private $half;
 
+    /**
+     * Order constructor.
+     */
     public function __construct()
     {
         $this->tickets = new ArrayCollection();
     }
 
+    /**
+     * @return mixed
+     */
     public function getId()
     {
         return $this->id;
     }
 
+    /**
+     * @return null|string
+     */
     public function getEmail(): ?string
     {
         return $this->email;
     }
 
+    /**
+     * @param string $email
+     * @return Order
+     */
     public function setEmail(string $email): self
     {
         $this->email = $email;
@@ -90,6 +106,10 @@ class Order
         return $this->tickets;
     }
 
+    /**
+     * @param Ticket $ticket
+     * @return Order
+     */
     public function addTicket(Ticket $ticket): self
     {
         if (!$this->tickets->contains($ticket)) {
@@ -100,6 +120,10 @@ class Order
         return $this;
     }
 
+    /**
+     * @param Ticket $ticket
+     * @return Order
+     */
     public function removeTicket(Ticket $ticket): self
     {
         if ($this->tickets->contains($ticket)) {
@@ -113,11 +137,18 @@ class Order
         return $this;
     }
 
+    /**
+     * @return \DateTimeInterface|null
+     */
     public function getOrderDate(): ?\DateTimeInterface
     {
         return $this->orderDate;
     }
 
+    /**
+     * @param \DateTimeInterface $orderDate
+     * @return Order
+     */
     public function setOrderDate(\DateTimeInterface $orderDate): self
     {
         $this->orderDate = $orderDate;
@@ -125,11 +156,18 @@ class Order
         return $this;
     }
 
+    /**
+     * @return \DateTimeInterface|null
+     */
     public function getChoiceDate(): ?\DateTimeInterface
     {
         return $this->choiceDate;
     }
 
+    /**
+     * @param \DateTimeInterface $choiceDate
+     * @return Order
+     */
     public function setChoiceDate(\DateTimeInterface $choiceDate): self
     {
         $this->choiceDate = $choiceDate;
@@ -137,11 +175,18 @@ class Order
         return $this;
     }
 
+    /**
+     * @return bool|null
+     */
     public function getHalf(): ?bool
     {
         return $this->half;
     }
 
+    /**
+     * @param bool $half
+     * @return Order
+     */
     public function setHalf(bool $half): self
     {
         $this->half = $half;
@@ -149,6 +194,11 @@ class Order
         return $this;
     }
 
+    /**
+     * @param ExecutionContextInterface $context
+     * @param $payload
+     * @throws \Exception
+     */
     public function validate(ExecutionContextInterface $context, $payload){
 
         $today = $this->getOrderDate();
@@ -189,6 +239,13 @@ class Order
                 ->addViolation();
         }
 
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function onPrePercist(){
+        $this->orderDate= new \DateTime();
     }
 }
 

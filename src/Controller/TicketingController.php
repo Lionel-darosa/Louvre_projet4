@@ -10,10 +10,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
+/**
+ * Class TicketingController
+ * @package App\Controller
+ */
 class TicketingController extends Controller
 {
     /**
      * @Route("/", name="ticketing")
+     *
+     * @param Request                   $request
+     * @param EntityManagerInterface    $manager
      */
     public function index(Request $request, EntityManagerInterface $manager)
     {

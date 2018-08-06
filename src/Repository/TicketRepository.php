@@ -24,7 +24,7 @@ class TicketRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('ticket')
             ->select('COUNT(ticket.id)')
             ->join('ticket.order', 'odr')
-            ->where('odr.visitDate=:visitDate')
+            ->where('odr.choiceDate=:visitDate')
             ->setParameter('visitDate', $visitDate)
             ->getQuery()
             ->getSingleScalarResult();
