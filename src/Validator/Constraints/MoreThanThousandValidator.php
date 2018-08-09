@@ -30,12 +30,12 @@ class MoreThanThousandValidator extends ConstraintValidator
         $dailyTickets = $this->entityManager->getRepository(Ticket::class)->countTicketsByVisitDate($value->getChoiceDate());
         $orderTickets = count($value->getTickets());
 
-        if ($dailyTickets > 1000){
+        if ($dailyTickets > 999){
             $this->context->buildViolation('Tout les billets pour cette date ont été vendus')
                 ->addViolation();
         }
         if ($dailyTickets < 1000 and ($orderTickets + $dailyTickets) > 1000 ){
-            $this->context->buildViolation('Il ne reste que '. 1000-$dailyTickets .' billets, vous devez retirer '. $orderTickets-(1000-$dailyTickets). ' billets de votre commande')
+            $this->context->buildViolation("Il ne reste que ". (1000-$dailyTickets) ." billets, vous devez retirer ". ($orderTickets-(1000-$dailyTickets)). " billets de votre commande")
                 ->addViolation();
         }
     }

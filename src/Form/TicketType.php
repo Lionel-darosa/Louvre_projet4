@@ -19,8 +19,14 @@ class TicketType extends AbstractType
         $builder
             ->add('lastName', TextType::class)
             ->add('firstName', TextType::class)
-            ->add('birth', DateType::class)
-            ->add('country', CountryType::class)
+            ->add('birth', DateType::class, [
+                'format' => 'dd/MM/yyyy',
+                'widget' => 'single_text',
+                'label' => 'Date de naissance'
+            ])
+            ->add('country', CountryType::class, [
+                'choice_translation_locale' => 'fr'
+            ])
             ->add('reduced', CheckboxType::class, array('required' => false ));
     }
 

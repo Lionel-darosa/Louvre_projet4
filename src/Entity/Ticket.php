@@ -43,6 +43,7 @@ class Ticket
      * @Assert\NotBlank(
      *     message="veuillez choisir une date"
      * )
+     * @Assert\Date()
      */
     private $birth;
 

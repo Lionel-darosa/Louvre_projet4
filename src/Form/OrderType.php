@@ -27,7 +27,7 @@ class OrderType extends AbstractType
             ->add('half', CheckboxType::class, [
                 'required' => false
             ])
-            ->add('Tickets', CollectionType::class, [
+            ->add('tickets', CollectionType::class, [
                 "entry_type"    => TicketType::class,
                 "allow_add"     => true,
                 "allow_delete"  => true,

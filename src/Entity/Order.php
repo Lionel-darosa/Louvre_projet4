@@ -36,7 +36,7 @@ class Order
 
     /**
      * @var Collection
-     * @ORM\OneToMany(targetEntity="App\Entity\Ticket", mappedBy="order", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\Ticket", mappedBy="order", orphanRemoval=true, cascade={"persist"})
      */
     private $tickets;
 
@@ -198,11 +198,12 @@ class Order
      * @param ExecutionContextInterface $context
      * @param $payload
      * @throws \Exception
+     * @assert\Callback
      */
     public function validate(ExecutionContextInterface $context, $payload){
 
-        $today = $this->getOrderDate();
-        $easterDate = new \DateTime(date('d-m-Y', easter_date($this->getChoiceDate())));
+        $today = new \DateTime();
+        $easterDate = new \DateTime(date('d-m-Y', easter_date($this->getChoiceDate()->format('Y'))));
 
         $holidays = array(
             '01/01',
@@ -213,18 +214,18 @@ class Order
             '01/11',
             '11/11',
             '25/12',
-            $easterDate->add(new \DateInterval('P2D'))->format('d/m'),
+            $easterDate->add(new \DateInterval('P1D'))->format('d/m'),
             $easterDate->add(new \DateInterval('P38D'))->format('d/m'),
             $easterDate->add(new \DateInterval('P11D'))->format('d/m')
         );
 
         if (in_array($this->getChoiceDate()->format('d/m'), $holidays)){
-            $context->buildViolation('Pas possible de réserver pour un jour férié')
+            $context->buildViolation('Vous ne pouvez pas réserver pour un jour férié')
                 ->atPath('choiceDate')
                 ->addViolation();
         }
-        if ($this->getChoiceDate()->format('N') === '0'){
-            $context->buildViolation('Pas possible de réserver pour le Dimanche')
+        if ($this->getChoiceDate()->format('N') === '7'){
+            $context->buildViolation('Vous ne pouvez pas réserver le Dimanche')
                 ->atPath('choiceDate')
                 ->addViolation();
         }
@@ -233,8 +234,13 @@ class Order
                 ->atPath('choiceDate')
                 ->addViolation();
         }
-        if (date('d/m/Y', $this->getChoiceDate()) === date('d/m/Y', $today) and date('G', $today) > '13' and $this->getHalf() == 'false'){
-            $context->buildViolation('Pas possible de prendre un billet journée après 14 heures')
+        if ( $this->getChoiceDate()->format('d/m/Y') === $today->format('d/m/Y') and $today->format('G') > '13' and $this->getHalf() === false){
+            $context->buildViolation('Vous ne pouvez pas prendre de billet journée après 14 heures')
+                ->atPath('choiceDate')
+                ->addViolation();
+        }
+        if ($this->getChoiceDate()->format('d/m/Y') < $today->format('d/m/Y')){
+            $context->buildViolation('vous ne pouvez pas réserver pour un jour passé')
                 ->atPath('choiceDate')
                 ->addViolation();
         }
