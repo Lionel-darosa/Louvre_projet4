@@ -13,6 +13,49 @@
 
         <div class="row">
             <div class="col-md-4 order-md-2 mb-4">
+
+            </div>
+            <div id="orderForm" class="col-md-8 order-md-1">
+                <h4 class="mb-3">Votre commande</h4>
+                {{ form_start(form) }}
+                    <div class="row">
+                        <div class="col-md-3">
+                            {{ form_label(form.choiceDate) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_widget(form.choiceDate) }}
+                        </div>
+                        {{ form_errors(form.choiceDate) }}
+                        {{ form_errors(form) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form_label(form.email) }}
+                        {{ form_widget(form.email, {'attr' : {'class' : 'form-control'} }) }}
+                    </div>
+                    <div class="row">
+                        {{ form_errors(form.email) }}
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        {{ form_widget(form.half, {'attr' : {'class' : 'custom-control-input'} }) }}
+                        {{ form_label(form.half, 'demi-journée' ,{'label_attr' : {'class' : 'custom-control-label'} }) }}
+                        {{ form_errors(form.half) }}
+                    </div>
+                    <hr>
+                    <button type="button" class="btn btn-md btn-primary btn-add" data-rel="#tickets">Ajouter un ticket</button>
+                    <hr class="mb-4">
+                    <div id="tickets" class="row" data-index="{{ form.tickets|length > 0 ? form.tickets|last.vars.name+1 : 0 }}" data-prototype="{{ include("ticketing/ticket.html.twig", { form: form.tickets.vars.prototype })|e("html_attr") }}">
+                        {% for ticket in form.tickets %}
+                            {{ include("ticketing/ticket.html.twig", { form: ticket }) }}
+                        {% endfor %}
+                    </div>
+                    <button type="submit" class="btn btn-secondary">Valider</button>
+                {{ form_widget(form._token) }}
+                {{ form_end (form, {"render_rest": false }) }}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 order-md-2 mb-4">
                 <h4 class="d-flex justify-content-between align-items-center mb-3">
                     <span class="text-muted">Your cart</span>
                     <span class="badge badge-secondary badge-pill">3</span>

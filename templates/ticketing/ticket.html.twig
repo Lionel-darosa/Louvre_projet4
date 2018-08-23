@@ -1,0 +1,33 @@
+<div class="col-md-12" id="ticket-{{ form.vars.name }}">
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            {{ form_label(form.lastName, 'Nom') }}
+            {{ form_widget(form.lastName, {'attr' : {'class' : 'form-control', 'placeholder': 'Nom'} }) }}
+        </div>
+        <div class="form-group col-md-6">
+            {{ form_label(form.firstName, 'Prenom') }}
+            {{ form_widget(form.firstName, {'attr' : {'class' : 'form-control', 'placeholder': 'Prenom'} }) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            {{ form_label(form.birth) }}
+        </div>
+        <div class="col-md-6" >
+            {{ form_widget(form.birth, {'attr': {'class' : 'birthdate'}}) }}
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+        {{ form_label(form.country, 'Pays') }}
+        {{ form_widget(form.country, {'attr' : {'class' : 'form-control custom-select d-block w-100'}}) }}
+        </div>
+    </div>
+    <div class="custom-control custom-checkbox">
+        {{ form_widget(form.reduced, {'attr' : {'class' : 'custom-control-input'} }) }}
+        {{ form_label(form.reduced, 'tarif réduit' ,{'label_attr' : {'class' : 'custom-control-label'} }) }}
+        {{ form_errors(form.reduced) }}
+    </div>
+    <button type="button" class="offset-md-10 btn-sm btn-outline-danger btn-remove" data-rel="#ticket-{{ form.vars.name }}">Supprimer</button>
+    <hr class="mb-4">
+</div>
