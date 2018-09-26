@@ -13,10 +13,126 @@ $('#order_choiceDate').datepicker({
 
 $('#orderForm li').css('color', 'red');
 
+//half price or not-----------------------------------------------/
+
+$("#order_half").click(function () {
+    $("form[name=order]").valid();
+
+    if ($("#order_half").is(":checked")){
+        $("#priceFull").text("Plein tarif 8€");
+        $("#priceChild").text("Enfant 4€");
+        $("#priceSenior").text("Senior 6€");
+        $("#priceReduce").text("Reduit 5€");
+        var free = countElements(prices, "gratuit");
+        $("#nbrFree").text("Nbr de billets : " + free);
+        var child = countElements(prices, "enfant");
+        $("#nbrChild").text("Nbr de billets : " + child);
+        $("#totalChild").text((child * 4) + " €");
+        var full = countElements(prices, "plein");
+        $("#nbrFull").text("Nbr de billets : " + full);
+        $("#totalFull").text((full * 8) + " €");
+        var reduce = countElements(prices, "reduit");
+        $("#nbrReduce").text("Nbr de billets : " + reduce);
+        $("#totalReduce").text((reduce * 5) + " €");
+        var senior = countElements(prices, "senior");
+        $("#nbrSenior").text("Nbr de billets : " + senior);
+        $("#totalSenior").text((senior * 6) + " €");
+        $("#nbrTickets").text(free + child + full + reduce + senior);
+        $("#total").text(((child * 4)+(full * 8)+(reduce * 5)+(senior * 6)) + " €");
+    } else {
+        $("#priceFull").text("Plein tarif 16€");
+        $("#priceChild").text("Enfant 8€");
+        $("#priceSenior").text("Senior 12€");
+        $("#priceReduce").text("Reduit 10€");
+        var free = countElements(prices, "gratuit");
+        $("#nbrFree").text("Nbr de billets : " + free);
+        var child = countElements(prices, "enfant");
+        $("#nbrChild").text("Nbr de billets : " + child);
+        $("#totalChild").text((child * 8) + " €");
+        var full = countElements(prices, "plein");
+        $("#nbrFull").text("Nbr de billets : " + full);
+        $("#totalFull").text((full * 16) + " €");
+        var reduce = countElements(prices, "reduit");
+        $("#nbrReduce").text("Nbr de billets : " + reduce);
+        $("#totalReduce").text((reduce * 10) + " €");
+        var senior = countElements(prices, "senior");
+        $("#nbrSenior").text("Nbr de billets : " + senior);
+        $("#totalSenior").text((senior * 12) + " €");
+        $("#nbrTickets").text(free + child + full + reduce + senior);
+        $("#total").text(((child * 8)+(full * 16)+(reduce * 10)+(senior * 12)) + " €");
+    }
+});
+
 //add and remove ticket form button-------------------------------/
 
-var tickets;
+var ages = {};
+var prices = {};
 
+function countElements(tab, element){
+    var nbr = 0;
+    for (i = 0; i <= ($("#tickets >div:last-child").attr("id")).match(/[0-9]/g).join(''); i++){
+        if (tab[i] === element){
+            nbr += 1;
+        }
+    }
+    return nbr;
+}
+
+function refreshSummary(){
+    var lastTicket = ($("#tickets >div:last-child").attr("id")).match(/[0-9]/g).join('');
+    for (i = 0; i <= lastTicket; i++){
+        ages[i]= moment().diff(moment($("#order_tickets_"+i+"_birth").val(), "DD/MM/YYYY"), 'years');
+        prices[i]=0;
+        if (ages[i] < 4){
+            prices[i] = 'gratuit';
+        } else if (ages[i] >= 4 && ages[i] < 12){
+            prices[i] = 'enfant';
+        } else if (ages[i] >= 12 && ages[i] < 60){
+            if ($("#order_tickets_"+i+"_reduced").is(":checked")){
+                prices[i] = 'reduit';
+            } else {
+                prices[i] = 'plein';
+            }
+        } else if (ages[i] >= 60){
+            prices[i] = 'senior';
+        }
+    }
+    if ($("#order_half").is(":checked")){
+        var free = countElements(prices, "gratuit");
+        $("#nbrFree").text("Nbr de billets : " + free);
+        var child = countElements(prices, "enfant");
+        $("#nbrChild").text("Nbr de billets : " + child);
+        $("#totalChild").text((child * 4) + " €");
+        var full = countElements(prices, "plein");
+        $("#nbrFull").text("Nbr de billets : " + full);
+        $("#totalFull").text((full * 8) + " €");
+        var reduce = countElements(prices, "reduit");
+        $("#nbrReduce").text("Nbr de billets : " + reduce);
+        $("#totalReduce").text((reduce * 5) + " €");
+        var senior = countElements(prices, "senior");
+        $("#nbrSenior").text("Nbr de billets : " + senior);
+        $("#totalSenior").text((senior * 6) + " €");
+        $("#nbrTickets").text(free + child + full + reduce + senior);
+        $("#total").text(((child * 4)+(full * 8)+(reduce * 5)+(senior * 6)) + " €");
+    } else {
+        var free = countElements(prices, "gratuit");
+        $("#nbrFree").text("Nbr de billets : " + free);
+        var child = countElements(prices, "enfant");
+        $("#nbrChild").text("Nbr de billets : " + child);
+        $("#totalChild").text((child * 8) + " €");
+        var full = countElements(prices, "plein");
+        $("#nbrFull").text("Nbr de billets : " + full);
+        $("#totalFull").text((full * 16) + " €");
+        var reduce = countElements(prices, "reduit");
+        $("#nbrReduce").text("Nbr de billets : " + reduce);
+        $("#totalReduce").text((reduce * 10) + " €");
+        var senior = countElements(prices, "senior");
+        $("#nbrSenior").text("Nbr de billets : " + senior);
+        $("#totalSenior").text((senior * 12) + " €");
+        $("#nbrTickets").text(free + child + full + reduce + senior);
+        $("#total").text(((child * 8)+(full * 16)+(reduce * 10)+(senior * 12)) + " €");
+    }
+}
 
 $(".btn-add").on("click", function() {
     $("form[name=order]").valid();
@@ -26,9 +142,17 @@ $(".btn-add").on("click", function() {
     $collectionHolder.append(prototype.replace(/__name__/g, index));
     $collectionHolder.data("index", index+1);
 
-    tickets = $('#tickets > *').length;
 
-    console.log(tickets);
+    //pricing-------------------/
+
+    $("#order_tickets_"+index+"_birth").blur(function () {
+        refreshSummary();
+    });
+
+    $("#order_tickets_"+index+"_reduced").click(function () {
+        refreshSummary();
+    });
+
 
     $('.birth').datepicker({
         language: "fr",
@@ -36,25 +160,9 @@ $(".btn-add").on("click", function() {
         orientation: "top auto",
         todayHighlight: true
     });
-    
-    //pricing-------------------/
-    //
-    // $("#order_tickets_"+index+"_birth").blur(function (e) {
-    //     var age = moment().diff(moment(e.target.value), 'years');
-    //     console.log(age);
-    //     if (age < 4){
-    //
-    //     } else if (age >= 4 && age < 12){
-    //
-    //     } else if (age >= 12 && age < 60){
-    //
-    //     } else if (age >= 60){
-    //
-    //     }
-    // })
 
     //validator rules-----------/
-    
+
     $("#order_tickets_"+index+"_firstName").rules("add", {
         required: true,
         messages : {
@@ -69,7 +177,7 @@ $(".btn-add").on("click", function() {
         }
     });
 
-    $("order_tickets_"+index+"_birth").rules("add", {
+    $("#order_tickets_"+index+"_birth").rules("add", {
         required: true,
         messages : {
             required: "veuillez entrer la date de naissance"
@@ -80,9 +188,11 @@ $(".btn-add").on("click", function() {
 
 $("body").on("click", ".btn-remove", function() {
     $($(this).data("rel")).remove();
-    tickets = $('#tickets > *').length;
-    console.log(tickets);
+    $("form[name=order]").valid();
+
+    refreshSummary();
 });
+
 
 
 //add custom validator method---------------------------------------------/
@@ -121,25 +231,18 @@ function JoursFeries (an){
 }
 
 
-
-
-//ajax thousand tickets checking------------/
+//ajax thousand tickets checking--------/
 
 var dates = {};
 
 $('#order_choiceDate').change(function (e) {
-    var date = moment(e.target.value, "DD/MM/YYYY").format("YYYY-MM-DD");
-    console.log(date);
-
     $.ajax({
         url: '/thousand/'+moment(e.target.value, "DD/MM/YYYY").format("YYYY-MM-DD"),
         async: false,
         dataType: 'json',
         success: function (data) {
             dates[e.target.value]=data;
-
         }
-
     });
 });
 
@@ -152,12 +255,18 @@ $.validator.addMethod("moreThousand",
 
 $.validator.addMethod("almostThousand",
     function (value, element) {
-    console.log(dates[$("#order_choiceDate").val()] + $('#tickets > *').length);
-        return this.optional(element) || (dates[$("#order_choiceDate").val()] < 10) && ((dates[$("#order_choiceDate").val()] + $('#tickets > *').length) > 10)
+        return this.optional(element) || (dates[$("#order_choiceDate").val()] + ($("#tickets >div").length)+1) <= 1000;
     },
     "vous devez retirer des billets de votre commande"
 );
 
+$.validator.addMethod("zeroTickets",
+    function (value, element) {
+    console.log($("#tickets >div").length);
+        return this.optional(element) || $("#tickets >div").length > 0;
+    },
+    "vous devez ajouter au moins un billet"
+);
 
 var today = (new Date());
 
@@ -191,7 +300,6 @@ $.validator.addMethod("notFullAfternoon", function (value, element) {
 }, "vous ne pouvez pas prendre de billets journée après 14h" );
 
 
-
 //validator method--------------------------------------------/
 
 $("form[name=order]").validate({
@@ -222,6 +330,7 @@ $("form[name=order]").validate({
             pastDay: true,
             notFullAfternoon: true,
             moreThousand: true,
+            zeroTickets: true,
             almostThousand: true
         },
         "order[half]": {
@@ -242,56 +351,26 @@ $("form[name=order]").validate({
     }
 });
 
-$("#order_half").click(function () {
-    $("form[name=order]").valid();
+
+//cart scroll down-------------------------------------------------/
+
+var $sidebar   = $("#cart"),
+    $window    = $(window),
+    offset     = $sidebar.offset(),
+    topPadding = 15;
+
+$window.scroll(function() {
+    if ($window.scrollTop() > offset.top) {
+        $sidebar.stop().animate({
+            marginTop: $window.scrollTop() - offset.top + topPadding
+        });
+    } else {
+        $sidebar.stop().animate({
+            marginTop: 0
+        });
+    }
 });
 
-// //email check
-//
-// $('#order_email').blur(function (e) {
-//     var regexMail = /.+@.+\..+/;
-//     $('#mailErrors ul li').remove();
-//     if (e.target.value === ''){
-//         $('#mailErrors ul').append('<li>Veuillez entrer votre adresse mail</li>').css('color', 'red');
-//     } else if (!regexMail.test(e.target.value)){
-//         $('#mailErrors ul').append('<li>Votre adresse mail n\'est pas correcte</li>').css('color', 'red');
-//     }
-// });
-//
-//
-// //order date check
-//
-// $('#order_choiceDate').blur(function (e) {
-//     $('#dateErrors li').remove();
-//
-//     var regexDate =/([0-2][0-9]|3[0-1])\/(0[1-9]|1[0-2])\/([0-2][0-9][0-9][0-9])/;
-//
-//     var selectDateMonth = e.target.value.substring(3,5);
-//     var selectDate = new Date(e.target.value.substring(6,10), selectDateMonth-=1, e.target.value.substring(0,2));
-//
-//
-//     var today = (new Date());
-//     console.log(today);
-//
-//     if (e.target.value === '') {
-//         $('#dateErrors').append('<li>Veuillez entrer date</li>').css('color', 'red');
-//     }else if (!regexDate.test(e.target.value)){
-//         $('#dateErrors').append('<li>Veuillez respecter le format JJ/MM/AAAA</li>').css('color', 'red');
-//     }
-//     if (selectDate.getDay() === 0) {
-//         $('#dateErrors').append('<li>Vous ne pouvez pas prendre de billets pour le dimanche</li>').css('color', 'red');
-//     }
-//     if (selectDate.getDay() === 2) {
-//         $('#dateErrors').append('<li>Le musée est fermé le Mardi</li>').css('color', 'red');
-//     }
-//     if (selectDate.toLocaleDateString("fr-FR") < today.toLocaleDateString("fr-FR")) {
-//         $('#dateErrors').append('<li>Vous ne pouvez pas réserver pour un jour passé</li>').css('color', 'red');
-//     }
-//     if (selectDate.toLocaleDateString("fr-FR") === today.toLocaleDateString("fr-FR") && today.getHours() > 13) {
-//         $('#dateErrors').append('<li>Vous ne pouvez pas prendre de billet journée après 14 heures</li>').css('color', 'red');
-//     }
-//
-// });
 
 
 

@@ -249,6 +249,11 @@ class Order
                 ->atPath('choiceDate')
                 ->addViolation();
         }
+        if (count($this->getTickets()) < 1){
+            $context->buildViolation('Vous devez ajouter au moins un billet')
+                ->atPath('choiceDate')
+                ->addViolation();
+        }
 
     }
 

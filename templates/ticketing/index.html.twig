@@ -3,99 +3,93 @@
 
 {% block body %}
     <body class="bg-light">
-
-    <div class="container">
-        <div class="py-5 text-center">
-            <img class="d-block mx-auto mb-4" src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-            <h2>Checkout form</h2>
-            <p class="lead">Below is an example form built entirely with Bootstrap's form controls. Each required form group has a validation state that can be triggered by attempting to submit the form without completing it.</p>
-        </div>
-
-        <div class="row">
-            <div id="cart" class="col-md-4 order-md-2 mb-4 sticky-top">
-                <h4 class="d-flex justify-content-between align-items-center mb-3">
-                    <span class="text-muted">Votre panier</span>
-                    <span class="badge badge-secondary badge-pill" id="nbrTickets">0</span>
-                </h4>
-                <ul class="list-group mb-3">
-                    <li class="list-group-item d-flex justify-content-between lh-condensed">
-                        <div>
-                            <h6 class="my-0">Plein tarif 16€</h6>
-                            <small class="text-muted">Nbr de billets :</small>
-                        </div>
-                        <span class="text-muted">€</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between lh-condensed">
-                        <div>
-                            <h6 class="my-0">enfant (-12 ans) 8€</h6>
-                            <small class="text-muted">Nbr de billets :</small>
-                        </div>
-                        <span class="text-muted">€</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between lh-condensed">
-                        <div>
-                            <h6 class="my-0">Senior (+60 ans) 12€</h6>
-                            <small class="text-muted">Nbr de billets :</small>
-                        </div>
-                        <span class="text-muted">€</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between lh-condensed">
-                        <div>
-                            <h6 class="my-0">Réduit 10€</h6>
-                            <small class="text-muted">Nbr de billets :</small>
-                        </div>
-                        <span class="text-muted">€</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between lh-condensed">
-                        <div>
-                            <h6 class="my-0">Gratuit (-4ans)</h6>
-                            <small class="text-muted">Nbr de billets :</small>
-                        </div>
-                        <span class="text-muted">€</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span>Total (EUR)</span>
-                        <strong>€</strong>
-                    </li>
-                </ul>
-
-                <form class="card p-2">
-                    <div class="input-group">
-                        <div class="input-group-append">
-                            <button type="submit" class="btn btn-secondary">Redeem</button>
-                        </div>
-                    </div>
-                </form>
+        <div class="container">
+            <div class="py-5 text-center">
+                <img class="d-block mx-auto mb-4" src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
+                <h2>Checkout form</h2>
+                <p class="lead">Below is an example form built entirely with Bootstrap's form controls. Each required form group has a validation state that can be triggered by attempting to submit the form without completing it.</p>
             </div>
-            <div id="orderForm" class="col-md-8 order-md-1">
-                <h4 class="mb-3">Votre commande</h4>
-                {{ form_start(form, {'attr' : {'id' : 'formOrder'}}) }}
-                    <div class="row">
-                        <div class="form-group col-md-6">
-                            {{ form_row(form.choiceDate) }}
+
+            <div class="row">
+                <div id="cart" class="col-md-4 order-md-2 order-xs-2 mb-4">
+                    <h4 class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted">Votre panier</span>
+                        <span class="badge badge-secondary badge-pill" id="nbrTickets">0</span>
+                    </h4>
+                    <ul class="list-group mb-3">
+                        <li class="list-group-item d-flex justify-content-between lh-condensed">
+                            <div>
+                                <h6 class="my-0" id="priceFull">Plein tarif 16€</h6>
+                                <small class="text-muted" id="nbrFull">Nbr de billets :</small>
+                            </div>
+                            <span class="text-muted" id="totalFull">€</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between lh-condensed">
+                            <div>
+                                <h6 class="my-0" id="priceChild">enfant 8€</h6>
+                                <small class="text-muted" id="nbrChild">Nbr de billets :</small>
+                            </div>
+                            <span class="text-muted" id="totalChild">€</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between lh-condensed">
+                            <div>
+                                <h6 class="my-0" id="priceSenior">Senior 12€</h6>
+                                <small class="text-muted" id="nbrSenior">Nbr de billets :</small>
+                            </div>
+                            <span class="text-muted" id="totalSenior">€</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between lh-condensed">
+                            <div>
+                                <h6 class="my-0" id="priceReduce">Réduit 10€</h6>
+                                <small class="text-muted" id="nbrReduce">Nbr de billets :</small>
+                            </div>
+                            <span class="text-muted" id="totalReduce">€</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between lh-condensed">
+                            <div>
+                                <h6 class="my-0">Gratuit</h6>
+                                <small class="text-muted" id="nbrFree">Nbr de billets :</small>
+                            </div>
+                            <span class="text-muted" >0 €</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Total (EUR)</span>
+                            <strong id="total">€</strong>
+                        </li>
+                    </ul>
+
+                </div>
+                <div id="orderForm" class="col-md-8 order-md-1 order-xs-2">
+                    <h4 class="mb-3">Votre commande</h4>
+                    {{ form_start(form, {'attr' : {'id' : 'formOrder'}}) }}
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form_row(form.choiceDate) }}
+                            </div>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        {{ form_row(form.email) }}
-                    </div>
-                    <div id="mailErrors" class="row">
-                        {{ form_errors(form.email) }}
-                        <ul></ul>
-                    </div>
-                    <div class="custom-control custom-checkbox">
-                        {{ form_row(form.half) }}
-                    </div>
-                    <hr>
-                    <button type="button" class="btn btn-md btn-primary btn-add" data-rel="#tickets">Ajouter un ticket</button>
-                    <hr class="mb-4">
-                    <div id="tickets" class="row" data-index="{{ form.tickets|length > 0 ? form.tickets|last.vars.name+1 : 0 }}" data-prototype="{{ include("ticketing/ticket.html.twig", { form: form.tickets.vars.prototype })|e("html_attr") }}">
-                        {% for ticket in form.tickets %}
-                            {{ include("ticketing/ticket.html.twig", { form: ticket }) }}
-                        {% endfor %}
-                    </div>
-                    <button type="submit" class="btn btn-secondary">Valider</button>
-                {{ form_widget(form._token) }}
-                {{ form_end (form, {"render_rest": false }) }}
+                        <div class="mb-3">
+                            {{ form_row(form.email) }}
+                        </div>
+                        <div id="mailErrors" class="row">
+                            {{ form_errors(form.email) }}
+                            <ul></ul>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                            {{ form_row(form.half) }}
+                        </div>
+                        <hr>
+                        <button type="button" class="btn btn-md btn-primary btn-add" data-rel="#tickets">Ajouter un ticket</button>
+                        <hr class="mb-4">
+                        <div id="tickets" class="row" data-index="{{ form.tickets|length > 0 ? form.tickets|last.vars.name+1 : 0 }}" data-prototype="{{ include("ticketing/ticket.html.twig", { form: form.tickets.vars.prototype })|e("html_attr") }}">
+                            {% for ticket in form.tickets %}
+                                {{ include("ticketing/ticket.html.twig", { form: ticket }) }}
+                            {% endfor %}
+                        </div>
+                        <button type="submit" class="btn btn-success">Valider et passer au paiement</button>
+                        <button type="reset" class="btn btn-danger">vider le formulaire</button>
+                    {{ form_widget(form._token) }}
+                    {{ form_end (form, {"render_rest": false }) }}
+                </div>
             </div>
         </div>
     </body>
