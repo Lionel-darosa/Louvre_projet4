@@ -63,7 +63,6 @@ $("#order_half").click(function () {
     }
 });
 
-//add and remove ticket form button-------------------------------/
 
 var ages = {};
 var prices = {};
@@ -85,16 +84,34 @@ function refreshSummary(){
         prices[i]=0;
         if (ages[i] < 4){
             prices[i] = 'gratuit';
+            if ($("#order_tickets_"+i+"_reduced").is(":checked")){
+                $("#reducedInfo_"+i).text("Gratuit, pas de réduction pour ce tarif");
+            } else {
+                $("#reducedInfo_"+i).text("tarif Gratuit");
+            }
         } else if (ages[i] >= 4 && ages[i] < 12){
             prices[i] = 'enfant';
+            if ($("#order_tickets_"+i+"_reduced").is(":checked")){
+                $("#reducedInfo_"+i).text("tarif enfant, pas de réduction pour ce tarif");
+            } else {
+                $("#reducedInfo_"+i).text("tarif enfant");
+            }
         } else if (ages[i] >= 12 && ages[i] < 60){
             if ($("#order_tickets_"+i+"_reduced").is(":checked")){
                 prices[i] = 'reduit';
+                console.log($("#reducedInfo_"+i).text());
+                $("#reducedInfo_"+i).text("tarif réduit, un justificatif vous sera demandé à l'entrée");
             } else {
                 prices[i] = 'plein';
+                $("#reducedInfo_"+i).text("tarif plein");
             }
         } else if (ages[i] >= 60){
             prices[i] = 'senior';
+            if ($("#order_tickets_"+i+"_reduced").is(":checked")){
+                $("#reducedInfo_"+i).text("tarif senior, pas de réduction pour ce tarif");
+            } else {
+                $("#reducedInfo_"+i).text("tarif senior");
+            }
         }
     }
     if ($("#order_half").is(":checked")){
@@ -134,14 +151,28 @@ function refreshSummary(){
     }
 }
 
+
+//add and remove ticket form button-------------------------------/
+
 $(".btn-add").on("click", function() {
-    $("form[name=order]").valid();
     var $collectionHolder = $($(this).data("rel"));
     var index = $collectionHolder.data("index");
     var prototype = $collectionHolder.data("prototype");
     $collectionHolder.append(prototype.replace(/__name__/g, index));
     $collectionHolder.data("index", index+1);
 
+    if ((dates[$("#order_choiceDate").val()] + ($("#tickets >div").length)) > 1000){
+        $(".btn-add").prop("disabled", true);
+        $("#validButton").prop("disabled", true);
+        $("#messageAddButton").text("Vous ne pouvez plus commander de billets pour cette date, veuillez retirer des billets");
+    } else {
+        $(".btn-add").prop("disabled", false);
+        $("#validButton").prop("disabled", false);
+        $("#messageAddButton").text("");
+    }
+
+    $("#validButton").prop("disabled", false);
+    $("#messageValid").text("");
 
     //pricing-------------------/
 
@@ -184,15 +215,33 @@ $(".btn-add").on("click", function() {
         }
     });
 
+
 });
 
 $("body").on("click", ".btn-remove", function() {
     $($(this).data("rel")).remove();
     $("form[name=order]").valid();
 
+    if ((dates[$("#order_choiceDate").val()] + ($("#tickets >div").length))>1000){
+        $(".btn-add").prop("disabled", true);
+        $("#validButton").prop("disabled", true);
+        $("#messageAddButton").text("Vous ne pouvez plus commander de billets pour cette date, veuillez retirer des billets");
+    } else {
+        $(".btn-add").prop("disabled", false);
+        $("#validButton").prop("disabled", false);
+        $("#messageAddButton").text("");
+    }
+
+    if ($("#tickets >div").length === 0) {
+        $("#validButton").prop("disabled", true);
+        $("#messageValid").text("Vous devez ajouter au moins un billet");
+    } else {
+        $("#validButton").prop("disabled", false);
+        $("#messageValid").text("");
+    }
+
     refreshSummary();
 });
-
 
 
 //add custom validator method---------------------------------------------/
@@ -244,6 +293,25 @@ $('#order_choiceDate').change(function (e) {
             dates[e.target.value]=data;
         }
     });
+
+    if (dates[e.target.value]>=1000){
+        $(".btn-add").prop("disabled", true);
+        $("#messageAddButton").text("Il n'y a plus de billets disponibles pour cette date");
+    } else if ((dates[e.target.value] + $("#tickets >div").length)>1000){
+        $(".btn-add").prop("disabled", true);
+        $("#messageAddButton").text("Vous ne pouvez plus commander de billets pour cette date, veuillez retirer des billets");
+    } else {
+        $(".btn-add").prop("disabled", false);
+        $("#messageAddButton").text("");
+    }
+
+    if ($("#tickets >div").length === 0) {
+        $("#validButton").prop("disabled", true);
+        $("#messageValid").text("Vous devez ajouter au moins un billet");
+    } else {
+        $("#validButton").prop("disabled", false);
+        $("#messageValid").text("");
+    }
 });
 
 $.validator.addMethod("moreThousand",
@@ -258,14 +326,6 @@ $.validator.addMethod("almostThousand",
         return this.optional(element) || (dates[$("#order_choiceDate").val()] + ($("#tickets >div").length)+1) <= 1000;
     },
     "vous devez retirer des billets de votre commande"
-);
-
-$.validator.addMethod("zeroTickets",
-    function (value, element) {
-    console.log($("#tickets >div").length);
-        return this.optional(element) || $("#tickets >div").length > 0;
-    },
-    "vous devez ajouter au moins un billet"
 );
 
 var today = (new Date());
@@ -330,7 +390,6 @@ $("form[name=order]").validate({
             pastDay: true,
             notFullAfternoon: true,
             moreThousand: true,
-            zeroTickets: true,
             almostThousand: true
         },
         "order[half]": {

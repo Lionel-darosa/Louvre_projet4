@@ -22,28 +22,28 @@
                                 <h6 class="my-0" id="priceFull">Plein tarif 16€</h6>
                                 <small class="text-muted" id="nbrFull">Nbr de billets :</small>
                             </div>
-                            <span class="text-muted" id="totalFull">€</span>
+                            <span class="text-muted" id="totalFull">0 €</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between lh-condensed">
                             <div>
                                 <h6 class="my-0" id="priceChild">enfant 8€</h6>
                                 <small class="text-muted" id="nbrChild">Nbr de billets :</small>
                             </div>
-                            <span class="text-muted" id="totalChild">€</span>
+                            <span class="text-muted" id="totalChild">0 €</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between lh-condensed">
                             <div>
                                 <h6 class="my-0" id="priceSenior">Senior 12€</h6>
                                 <small class="text-muted" id="nbrSenior">Nbr de billets :</small>
                             </div>
-                            <span class="text-muted" id="totalSenior">€</span>
+                            <span class="text-muted" id="totalSenior">0 €</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between lh-condensed">
                             <div>
                                 <h6 class="my-0" id="priceReduce">Réduit 10€</h6>
                                 <small class="text-muted" id="nbrReduce">Nbr de billets :</small>
                             </div>
-                            <span class="text-muted" id="totalReduce">€</span>
+                            <span class="text-muted" id="totalReduce">0 €</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between lh-condensed">
                             <div>
@@ -79,14 +79,16 @@
                         </div>
                         <hr>
                         <button type="button" class="btn btn-md btn-primary btn-add" data-rel="#tickets">Ajouter un ticket</button>
+                        <div id="messageAddButton" style="color: red"></div>
                         <hr class="mb-4">
                         <div id="tickets" class="row" data-index="{{ form.tickets|length > 0 ? form.tickets|last.vars.name+1 : 0 }}" data-prototype="{{ include("ticketing/ticket.html.twig", { form: form.tickets.vars.prototype })|e("html_attr") }}">
                             {% for ticket in form.tickets %}
                                 {{ include("ticketing/ticket.html.twig", { form: ticket }) }}
                             {% endfor %}
                         </div>
-                        <button type="submit" class="btn btn-success">Valider et passer au paiement</button>
+                        <button type="submit" class="btn btn-success" id="validButton">Valider et passer au paiement</button>
                         <button type="reset" class="btn btn-danger">vider le formulaire</button>
+                        <div id="messageValid" style="color: red"></div>
                     {{ form_widget(form._token) }}
                     {{ form_end (form, {"render_rest": false }) }}
                 </div>

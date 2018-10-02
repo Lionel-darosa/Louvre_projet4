@@ -19,8 +19,10 @@
         {{ form_widget(form.country, {'attr' : {'class' : 'form-control custom-select d-block w-100'}}) }}
         </div>
     </div>
-    <div class="custom-control custom-checkbox">
+    <br>
+    <div class="custom-checkbox">
         {{ form_row(form.reduced) }}
+        <div id="reducedInfo_{{ form.vars.name }}" style="color: green"></div>
     </div>
     <button type="button" class="offset-md-10 btn-sm btn-outline-danger btn-remove" data-rel="#ticket-{{ form.vars.name }}">Supprimer</button>
     <hr class="mb-4">
