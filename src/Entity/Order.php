@@ -64,6 +64,21 @@ class Order
     private $half;
 
     /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $price;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $stripeToken;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true, options={"default":false})
+     */
+    private $payed;
+
+    /**
      * Order constructor.
      */
     public function __construct()
@@ -262,6 +277,42 @@ class Order
      */
     public function onPrePercist(){
         $this->orderDate= new \DateTime();
+    }
+
+    public function getPrice(): ?int
+    {
+        return $this->price;
+    }
+
+    public function setPrice(?int $price): self
+    {
+        $this->price = $price;
+
+        return $this;
+    }
+
+    public function getStripeToken(): ?string
+    {
+        return $this->stripeToken;
+    }
+
+    public function setStripeToken(?string $stripeToken): self
+    {
+        $this->stripeToken = $stripeToken;
+
+        return $this;
+    }
+
+    public function getPayed(): ?bool
+    {
+        return $this->payed;
+    }
+
+    public function setPayed(?bool $payed): self
+    {
+        $this->payed = $payed;
+
+        return $this;
     }
 }
 

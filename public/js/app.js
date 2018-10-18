@@ -39,6 +39,7 @@ $("#order_half").click(function () {
         $("#totalSenior").text((senior * 6) + " €");
         $("#nbrTickets").text(free + child + full + reduce + senior);
         $("#total").text(((child * 4)+(full * 8)+(reduce * 5)+(senior * 6)) + " €");
+        $("#order_price").attr('value', ((child * 4)+(full * 8)+(reduce * 5)+(senior * 6)));
     } else {
         $("#priceFull").text("Plein tarif 16€");
         $("#priceChild").text("Enfant 8€");
@@ -60,6 +61,7 @@ $("#order_half").click(function () {
         $("#totalSenior").text((senior * 12) + " €");
         $("#nbrTickets").text(free + child + full + reduce + senior);
         $("#total").text(((child * 8)+(full * 16)+(reduce * 10)+(senior * 12)) + " €");
+        $("#order_price").attr('value', ((child * 8)+(full * 16)+(reduce * 10)+(senior * 12)));
     }
 });
 
@@ -131,6 +133,7 @@ function refreshSummary(){
         $("#totalSenior").text((senior * 6) + " €");
         $("#nbrTickets").text(free + child + full + reduce + senior);
         $("#total").text(((child * 4)+(full * 8)+(reduce * 5)+(senior * 6)) + " €");
+        $("#order_price").attr('value', ((child * 4)+(full * 8)+(reduce * 5)+(senior * 6)));
     } else {
         var free = countElements(prices, "gratuit");
         $("#nbrFree").text("Nbr de billets : " + free);
@@ -148,6 +151,7 @@ function refreshSummary(){
         $("#totalSenior").text((senior * 12) + " €");
         $("#nbrTickets").text(free + child + full + reduce + senior);
         $("#total").text(((child * 8)+(full * 16)+(reduce * 10)+(senior * 12)) + " €");
+        $("#order_price").attr('value', ((child * 8)+(full * 16)+(reduce * 10)+(senior * 12)));
     }
 }
 
@@ -429,7 +433,6 @@ $window.scroll(function() {
         });
     }
 });
-
 
 
 

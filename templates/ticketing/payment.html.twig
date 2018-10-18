@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+    <body class="bg-light">
+    <div class="container">
+        <div class="py-5 text-center">
+            <img class="d-block mx-auto mb-4" src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
+            <h2>Votre Panier</h2>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 order-md-1 order-xs-2">
+                <div class="row">
+                    <p>E-mail : {{ order.email }}</p>
+                </div>
+                <div class="row">
+                    <p>Date de visite choisie : {{ order.choiceDate|date("d/m/Y") }}</p>
+                </div>
+                <h5>Tickets choisis</h5>
+                <table class="table cart table-hover table-colored">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Nom</th>
+                            <th>Prenom</th>
+                            <th>Date de Naissance</th>
+                            <th>Pays</th>
+                            <th>Prix</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ticket in order.tickets %}
+                            <tr>
+                                <td class="lastname">{{ ticket.lastname }}</td>
+                                <td class="firstname">{{ ticket.firstName }}</td>
+                                <td class="birth">{{ ticket.birth|date("d/m/Y") }}</td>
+                                <td class="country">{{ ticket.country }}</td>
+                                <td class="price"></td>
+                            </tr>
+                        {% endfor %}
+                        <tr class="total">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td style="font-weight: bold; font-size: 1.3em">Total</td>
+                            <td>{{ order.price }} Euros</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="row">
+                    <form action="/valid/{{ order.id }}" method="POST">
+                        <script
+                                src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                                data-key={{ public }}
+                                data-amount={{ order.price * 100 }}
+                                data-name="Billeterie du Louvre"
+                                data-description="Widget"
+                                data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+                                data-locale="auto"
+                                data-currency="eur">
+                        </script>
+                    </form>
+                    <a role="button" class="btn btn-link" href="/">Annuler et revenir à la billeterie</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    </body>
+{% endblock %}
