@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Ticket;
 use App\Form\OrderType;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -34,5 +36,18 @@ class TicketingController extends Controller
             'controller_name' => 'TicketingController',
             "form" => $form->createView()
         ]);
+    }
+
+    /**
+     * @Route("/thousand/{day}", name="thousand")
+     *
+     * @param $day
+     */
+    public function thousandTickets($day){
+        $choiceDate= new \DateTime($day);
+        $nbr= $this->getDoctrine()
+            ->getRepository(Ticket::class)
+            ->countTicketsByVisitDate($choiceDate);
+        return $this->json($nbr);
     }
 }

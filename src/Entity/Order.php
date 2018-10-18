@@ -244,6 +244,16 @@ class Order
                 ->atPath('choiceDate')
                 ->addViolation();
         }
+        if ( $this->getChoiceDate()->format('d/m/Y') === $today->format('d/m/Y') and $today->format('G') > '17'){
+            $context->buildViolation('Vous ne pouvez plus prendre de billet, le musée est fermé')
+                ->atPath('choiceDate')
+                ->addViolation();
+        }
+        if (count($this->getTickets()) < 1){
+            $context->buildViolation('Vous devez ajouter au moins un billet')
+                ->atPath('choiceDate')
+                ->addViolation();
+        }
 
     }
 

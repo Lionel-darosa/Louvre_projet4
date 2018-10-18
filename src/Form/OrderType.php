@@ -25,7 +25,8 @@ class OrderType extends AbstractType
                 'label' => 'Date de visite'
             ])
             ->add('half', CheckboxType::class, [
-                'required' => false
+                'required' => false,
+                'label' => 'demi-journée'
             ])
             ->add('tickets', CollectionType::class, [
                 "entry_type"    => TicketType::class,
