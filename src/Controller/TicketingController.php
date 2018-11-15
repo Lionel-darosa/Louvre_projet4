@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Order;
 use App\Entity\Ticket;
 use App\Form\OrderType;
+use App\Service\OrderServices;
+use CodeItNow\BarcodeBundle\Utils\BarcodeGenerator;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -31,10 +33,7 @@ class TicketingController extends Controller
         if ($form->isSubmitted() and $form->isValid()){
             $manager->persist($form->getData());
             $manager->flush();
-            $lastId= $this->getDoctrine()
-                ->getRepository(Order::class)
-                ->findBy(array(), array('id'=>'desc'),1,0);
-            return $this->redirect('/payment/' . $lastId[0]->getId());
+            return $this->redirect('/payment/' . $form->getData()->getId());
         }
         return $this->render('ticketing/index.html.twig', [
             'controller_name' => 'TicketingController',
@@ -60,8 +59,8 @@ class TicketingController extends Controller
      * @param $id
      * @return Response
      */
-    public function payment($stripePublicKey, $id){
-        $order= $this->getDoctrine()->getRepository(Order::class)->find($id);
+    public function payment($stripePublicKey,Order $order){
+        $this->denyAccessUnlessGranted('payment', $order);
         return $this->render('ticketing/payment.html.twig', [
             'order' => $order,
             'public' => $stripePublicKey
@@ -72,31 +71,32 @@ class TicketingController extends Controller
      * @Route("/valid/{id}", name="valid")
      * @param $id
      */
-    public function valid(Request $request, $stripeSecretKey, $id){
+    public function valid(Request $request, $stripeSecretKey, Order $order, OrderServices $orderServices){
         $entityManager = $this->getDoctrine()->getManager();
-        $order= $entityManager->getRepository(Order::class)->find($id);
         $token=$request->request->get("stripeToken");
         $order->setStripeToken($token);
+        $order->setPayed(true);
         $entityManager->flush();
-        \Stripe\Stripe::setApiKey($stripeSecretKey);
-
-        $charge = \Stripe\Charge::create([
-            'amount' => ($order->getPrice())*100,
-            'currency' => 'eur',
-            'description' => 'Example charge',
-            'source' => $token,
-        ]);
-        return $this->redirectToRoute('ticketing');
+        $orderServices->orderCharge($stripeSecretKey, $order, $token);
+        return $this->redirect('/send/'.$order->getId());
     }
 
     /**
-     * @Route("/test", name="test")
-     *
+     * @Route("/send/{id}", name="send")
      */
-    public function test(){
+    public function send(Order $order, \Swift_Mailer $mailer, OrderServices $orderServices){
+        $this->denyAccessUnlessGranted('send', $order);
+        $tickets= $order->getTickets();
+        $code=[];
+        $code= $orderServices->barcodeGenerator($code, $tickets);
+        $orderServices->pdfGenerator($order, $code);
+        $orderServices->sendMail($order);
+        unlink('./pdf/commande'.$order->getId().'.pdf');
 
-        $lastId= $this->getDoctrine()->getRepository(Order::class)->findBy(array(), array('id'=>'desc'),1,0);
-        var_dump($lastId[0]->getId());
-
+        return $this->render('ticketing/mail.html.twig', [
+            'order' => $order,
+            'code' => $code
+        ]);
     }
+
 }

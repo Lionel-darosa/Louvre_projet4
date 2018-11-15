@@ -42,8 +42,8 @@
                             <td></td>
                             <td></td>
                             <td></td>
-                            <td style="font-weight: bold; font-size: 1.3em">Total</td>
-                            <td>{{ order.price }} Euros</td>
+                            <td style="font-weight: bold; font-size: 1.3em">Total (TTC)</td>
+                            <td style="font-weight: bold">{{ order.price }} Euros</td>
                         </tr>
                     </tbody>
                 </table>
@@ -54,10 +54,11 @@
                                 data-key={{ public }}
                                 data-amount={{ order.price * 100 }}
                                 data-name="Billeterie du Louvre"
-                                data-description="Widget"
-                                data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+                                data-description=""
+                                data-image="{{ asset('logoLouvre.png') }}"
                                 data-locale="auto"
-                                data-currency="eur">
+                                data-currency="eur"
+                                data-email="{{ order.email }}">
                         </script>
                     </form>
                     <a role="button" class="btn btn-link" href="/">Annuler et revenir à la billeterie</a>
