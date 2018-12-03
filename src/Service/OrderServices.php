@@ -1,80 +1,91 @@
 <?php
+
 namespace App\Service;
 
-use CodeItNow\BarcodeBundle\Utils\BarcodeGenerator;
-use Knp\Snappy\Pdf;
+use App\Entity\Order;
+use App\Stripe\ChargeManager;
+use App\Utils\Mailer;
+use App\Utils\PdfGenerator;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 
-
+/**
+ * Class OrderServices
+ * @package App\Service
+ */
 class OrderServices
 {
-    private $pdf;
-    private $template;
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
+    /**
+     * @var ChargeManager
+     */
+    private $stripeManager;
+
+    /**
+     * @var Mailer
+     */
     private $mailer;
 
-    public function __construct(Pdf $pdf,\Twig_Environment $template, \Swift_Mailer $mailer)
+    /**
+     * @var PdfGenerator
+     */
+    private $pdfGenerator;
+
+    /**
+     * OrderServices constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param ChargeManager $stripeManager
+     * @param Mailer $mailer
+     * @param PdfGenerator $pdfGenerator
+     */
+    public function __construct(EntityManagerInterface $entityManager, ChargeManager $stripeManager, Mailer $mailer, PdfGenerator $pdfGenerator)
     {
-        $this->pdf = $pdf;
-        $this->template = $template;
+        $this->entityManager = $entityManager;
+        $this->stripeManager = $stripeManager;
         $this->mailer = $mailer;
+        $this->pdfGenerator = $pdfGenerator;
     }
 
-    public function orderCharge($stripeSecretKey, $order, $token)
+    /**
+     * @param Order $order
+     * @param Request $request
+     */
+    public function valid(Order $order, Request $request)
     {
-        \Stripe\Stripe::setApiKey($stripeSecretKey);
-
-        $charge = \Stripe\Charge::create([
-            'amount' => ($order->getPrice())*100,
-            'currency' => 'eur',
-            'description' => 'Example charge',
-            'source' => $token,
-        ]);
+        $order->setStripeToken($request->request->get("stripeToken"));
+        $order->setPayed(true);
+        $this->entityManager->flush();
+        $this->stripeManager->create($order->getPrice()*100, $order->getStripeToken(), "Commande billets Louvre");
     }
 
-    public function barcodeGenerator($code, $tickets)
+    /**
+     * @param Order $order
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
+    public function send(Order $order)
     {
-        for ($i= 0; $i<count($tickets); $i++ ){
-            $barcode = new BarcodeGenerator();
-            $barcode->setText($tickets[$i]->getId());
-            $barcode->setType(BarcodeGenerator::Code128);
-            $barcode->setScale(1);
-            $barcode->setThickness(25);
-            $barcode->setFontSize(0);
-            $code[$tickets[$i]->getId()]= $barcode->generate();
-        }
-        return $code;
-    }
+        $filename = './pdf/commande'.$order->getId().'.pdf';
 
-    public function pdfGenerator($order, $code)
-    {
-        $this->pdf->generateFromHtml(
-            $this->template->render(
-                'ticketing/attachment.html.twig',
-                array(
-                    'order' => $order,
-                    'code' => $code
-                )
-            ),
-            './pdf/commande'.$order->getId().'.pdf'
+        $this->pdfGenerator->generate(
+            'ticketing/attachment.html.twig',
+            ['order' => $order],
+            $filename
         );
-    }
 
-    public function sendMail($order)
-    {
-        var_dump($order->getEmail());
-        $message = (new \Swift_Message('Hello Email'))
-            ->setFrom('lioneldarosa@gmail.com')
-            ->setTo($order->getEmail())
-            ->setBody(
-                $this->template->render(
-                    'ticketing/mail.html.twig',
-                    array(
-                        'order' => $order,
-                    )
-                ),
-                'text/html'
-            )
-            ->attach(\Swift_Attachment::fromPath('./pdf/commande'.$order->getId().'.pdf'))
-        ;
-        $this->mailer->send($message);
+        $this->mailer->send(
+            "Louvre - Votre commande de billets",
+            $order->getEmail(),
+            'ticketing/mail.html.twig',
+            ['order' => $order],
+            [$filename]
+        );
+
+        unlink($filename);
     }
 }
