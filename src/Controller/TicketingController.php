@@ -2,8 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Order;
 use App\Entity\Ticket;
 use App\Form\OrderType;
+use App\Service\OrderServices;
+use CodeItNow\BarcodeBundle\Utils\BarcodeGenerator;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -30,7 +33,7 @@ class TicketingController extends Controller
         if ($form->isSubmitted() and $form->isValid()){
             $manager->persist($form->getData());
             $manager->flush();
-            return $this->redirectToRoute('ticketing');
+            return $this->redirect('/payment/' . $form->getData()->getId());
         }
         return $this->render('ticketing/index.html.twig', [
             'controller_name' => 'TicketingController',
@@ -50,4 +53,47 @@ class TicketingController extends Controller
             ->countTicketsByVisitDate($choiceDate);
         return $this->json($nbr);
     }
+
+    /**
+     * @Route("/payment/{id}", name="payment")
+     * @param $id
+     * @return Response
+     */
+    public function payment($stripePublicKey,Order $order){
+        $this->denyAccessUnlessGranted('payment', $order);
+        return $this->render('ticketing/payment.html.twig', [
+            'order' => $order,
+            'public' => $stripePublicKey
+        ]);
+    }
+
+    /**
+     * @Route("/valid/{id}", name="valid")
+     * @param $id
+     */
+    public function valid(Request $request, $stripeSecretKey, Order $order, OrderServices $orderServices){
+        $entityManager = $this->getDoctrine()->getManager();
+        $token=$request->request->get("stripeToken");
+        $order->setStripeToken($token);
+        $order->setPayed(true);
+        $entityManager->flush();
+        $orderServices->orderCharge($stripeSecretKey, $order, $token);
+        return $this->redirect('/send/'.$order->getId());
+    }
+
+    /**
+     * @Route("/send/{id}", name="send")
+     */
+    public function send(Order $order, \Swift_Mailer $mailer, OrderServices $orderServices){
+        $this->denyAccessUnlessGranted('send', $order);
+        $tickets= $order->getTickets();
+        $code=[];
+        $code= $orderServices->barcodeGenerator($code, $tickets);
+        $orderServices->pdfGenerator($order, $code);
+        $orderServices->sendMail($order);
+        unlink('./pdf/commande'.$order->getId().'.pdf');
+
+        return $this->redirectToRoute('ticketing');
+    }
+
 }

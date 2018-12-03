@@ -1,0 +1,55 @@
+{% extends 'pdf.html.twig' %}
+
+
+{% block body %}
+    <body class="bg-light">
+    <div class="container">
+        <div class="py-5 text-center">
+            <img class="d-block mx-auto mb-4" src="{{ asset('logoLouvre.png') }}" alt="" width="100" height="100">
+            <h2>Billeterie du Louvre</h2>
+            <h4>Votre Commande</h4>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 order-md-1 order-xs-2">
+                <div class="row">
+                    <p>E-mail : {{ order.email }}</p>
+                </div>
+                <div class="row">
+                    <p>Date de visite choisie : {{ order.choiceDate|date("d/m/Y") }}</p>
+                </div>
+                <h5>Vos billets</h5>
+                <br>
+                <hr />
+                {% for ticket in order.tickets %}
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="row">
+                                <div class="col">
+                                    <p>Nom: {{ ticket.firstName }}</p>
+                                </div>
+                                <div class="col">
+                                    <p>Prenom: {{ ticket.lastName }}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <p>Date de naissance: {{ ticket.birth|date("d/m/Y") }}</p>
+                                </div>
+                                <div class="col">
+                                    <p>Pays: {{ ticket.country }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <img src="data:image/png;base64,'.{{ code[ticket.id] }}.'">
+                        </div>
+                    </div>
+                    <hr />
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+    </body>
+{% endblock %}
