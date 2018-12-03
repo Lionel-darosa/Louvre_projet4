@@ -93,10 +93,7 @@ class TicketingController extends Controller
         $orderServices->sendMail($order);
         unlink('./pdf/commande'.$order->getId().'.pdf');
 
-        return $this->render('ticketing/mail.html.twig', [
-            'order' => $order,
-            'code' => $code
-        ]);
+        return $this->redirectToRoute('ticketing');
     }
 
 }

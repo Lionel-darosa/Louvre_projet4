@@ -60,6 +60,7 @@ class OrderServices
 
     public function sendMail($order)
     {
+        var_dump($order->getEmail());
         $message = (new \Swift_Message('Hello Email'))
             ->setFrom('lioneldarosa@gmail.com')
             ->setTo($order->getEmail())
