@@ -3,17 +3,15 @@
 namespace App\Controller;
 
 use App\Entity\Order;
-use App\Entity\Ticket;
-use App\Form\OrderType;
+use App\Handler\OrderHandler;
+use App\Repository\TicketRepository;
 use App\Service\OrderServices;
-use CodeItNow\BarcodeBundle\Utils\BarcodeGenerator;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
  * Class TicketingController
@@ -23,44 +21,39 @@ class TicketingController extends Controller
 {
     /**
      * @Route("/", name="ticketing")
-     *
-     * @param Request                   $request
-     * @param EntityManagerInterface    $manager
+     * @param Request $request
+     * @param OrderHandler $orderHandler
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
-    public function index(Request $request, EntityManagerInterface $manager)
+    public function index(Request $request, OrderHandler $orderHandler)
     {
-        $form = $this->createForm(OrderType::class)->handleRequest($request);
-        if ($form->isSubmitted() and $form->isValid()){
-            $manager->persist($form->getData());
-            $manager->flush();
-            return $this->redirect('/payment/' . $form->getData()->getId());
+        if ($orderHandler->handle($request)){
+            return $this->redirectToRoute("payment", ["id" => $orderHandler->getOrder()->getId()]);
         }
         return $this->render('ticketing/index.html.twig', [
-            'controller_name' => 'TicketingController',
-            "form" => $form->createView()
+            "form" => $orderHandler->createView()
         ]);
     }
 
     /**
      * @Route("/thousand/{day}", name="thousand")
-     *
-     * @param $day
+     * @param string $day
+     * @param TicketRepository $ticketRepository
+     * @return JsonResponse
      */
-    public function thousandTickets($day){
-        $choiceDate= new \DateTime($day);
-        $nbr= $this->getDoctrine()
-            ->getRepository(Ticket::class)
-            ->countTicketsByVisitDate($choiceDate);
-        return $this->json($nbr);
+    public function thousandTickets(string $day, TicketRepository $ticketRepository)
+    {
+        return $this->json($ticketRepository->countTicketsByVisitDate(new \DateTime($day)));
     }
 
     /**
      * @Route("/payment/{id}", name="payment")
+     * @IsGranted("payment", subject="order")
      * @param $id
      * @return Response
      */
-    public function payment($stripePublicKey,Order $order){
-        $this->denyAccessUnlessGranted('payment', $order);
+    public function payment(string $stripePublicKey,Order $order)
+    {
         return $this->render('ticketing/payment.html.twig', [
             'order' => $order,
             'public' => $stripePublicKey
@@ -69,30 +62,30 @@ class TicketingController extends Controller
 
     /**
      * @Route("/valid/{id}", name="valid")
-     * @param $id
+     * @param Request $request
+     * @param OrderServices $orderServices
+     * @param Order $order
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function valid(Request $request, $stripeSecretKey, Order $order, OrderServices $orderServices){
-        $entityManager = $this->getDoctrine()->getManager();
-        $token=$request->request->get("stripeToken");
-        $order->setStripeToken($token);
-        $order->setPayed(true);
-        $entityManager->flush();
-        $orderServices->orderCharge($stripeSecretKey, $order, $token);
-        return $this->redirect('/send/'.$order->getId());
+    public function valid(Request $request, OrderServices $orderServices, Order $order)
+    {
+        $orderServices->valid($order, $request);
+        return $this->redirectToRoute('send', ["id" => $order->getId()]);
     }
 
     /**
      * @Route("/send/{id}", name="send")
+     * @IsGranted("send", subject="order")
+     * @param Order $order
+     * @param OrderServices $orderServices
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
      */
-    public function send(Order $order, \Swift_Mailer $mailer, OrderServices $orderServices){
-        $this->denyAccessUnlessGranted('send', $order);
-        $tickets= $order->getTickets();
-        $code=[];
-        $code= $orderServices->barcodeGenerator($code, $tickets);
-        $orderServices->pdfGenerator($order, $code);
-        $orderServices->sendMail($order);
-        unlink('./pdf/commande'.$order->getId().'.pdf');
-
+    public function send(Order $order, OrderServices $orderServices)
+    {
+        $orderServices->send($order);
         return $this->redirectToRoute('ticketing');
     }
 
